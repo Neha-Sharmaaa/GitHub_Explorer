@@ -2,26 +2,14 @@ import React, { useState, useEffect, useMemo } from 'react';
 import SearchBar from '../components/SearchBar';
 import UserCard from '../components/UserCard';
 import RepoCard from '../components/RepoCard';
+import Loader from '../components/Loader';
+import SkeletonCard from '../components/SkeletonCard';
+import GithubIcon from '../components/GithubIcon';
 import { useDebounce } from '../hooks/useDebounce';
 import { searchUsers, getUserRepos } from '../services/githubApi';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle } from '../components/Icons';
 
-const GithubIcon = ({ size = 24, className = "" }) => (
-  <svg 
-    width={size} 
-    height={size} 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round" 
-    className={className}
-  >
-    <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
-    <path d="M9 18c-4.51 2-5-2-7-2" />
-  </svg>
-);
+
 
 const Home = () => {
   const [query, setQuery] = useState('');
@@ -130,15 +118,18 @@ const Home = () => {
       )}
 
       {isUsersLoading ? (
-        <div className="spinner-wrap"><div className="loading-spinner"></div></div>
+        <div className="user-results-grid">
+          {[...Array(8)].map((_, i) => <SkeletonCard key={i} />)}
+        </div>
       ) : (
         <div className="user-results-grid">
-          {users.map(user => (
+          {users.map((user, index) => (
             <UserCard 
               key={user.id} 
               user={user} 
               isActive={selectedUser === user.login} 
               onClick={handleUserClick} 
+              style={{ animationDelay: `${index * 0.05}s` }}
             />
           ))}
         </div>
@@ -165,13 +156,17 @@ const Home = () => {
           </div>
 
           {isReposLoading ? (
-            <div className="spinner-wrap"><div className="loading-spinner"></div></div>
+            <Loader message={`Fetching repositories for ${selectedUser}...`} />
           ) : repos.length === 0 ? (
             <p style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>No public repositories found.</p>
           ) : (
             <div className="repos-grid">
-              {processedRepos.map(repo => (
-                <RepoCard key={repo.id} repo={repo} />
+              {processedRepos.map((repo, index) => (
+                <RepoCard 
+                  key={repo.id} 
+                  repo={repo} 
+                  style={{ animationDelay: `${index * 0.05}s` }}
+                />
               ))}
             </div>
           )}
