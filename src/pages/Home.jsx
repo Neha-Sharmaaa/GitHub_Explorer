@@ -4,7 +4,7 @@ import UserCard from '../components/UserCard';
 import RepoCard from '../components/RepoCard';
 import { useDebounce } from '../hooks/useDebounce';
 import { searchUsers, getUserRepos } from '../services/githubApi';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Github } from 'lucide-react';
 
 const Home = () => {
   const [query, setQuery] = useState('');
@@ -78,57 +78,65 @@ const Home = () => {
     });
   }, [repos, filterLang, sortBy]);
 
+  // If no search has happened yet, show the full hero
+  const isHeroMode = query === '' && users.length === 0 && !isUsersLoading;
+
+  if (isHeroMode) {
+    return (
+      <div className="hero-section">
+        <h1 className="hero-title">
+          Search <span>GitHub</span> Users
+        </h1>
+        <p className="hero-subtitle">
+          Explore repositories, discover projects, and bookmark your favourites.
+        </p>
+        <div className="hero-search-wrapper">
+          <SearchBar query={query} setQuery={setQuery} autoFocus={true} />
+        </div>
+        <Github size={80} className="github-logo-large" />
+      </div>
+    );
+  }
+
   return (
     <>
-      <div className="search-box">
-        <label className="search-label">Search GitHub users</label>
+      <div className="results-header-bar">
         <SearchBar query={query} setQuery={setQuery} autoFocus={true} />
       </div>
 
       {usersError && (
-        <div style={{ color: '#ff4d4f', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <AlertCircle size={16} /> {usersError}
+        <div style={{ color: '#ff4d4f', marginBottom: '2rem', textAlign: 'center' }}>
+          <AlertCircle size={20} style={{ verticalAlign: 'middle', marginRight: '0.5rem' }} /> {usersError}
         </div>
       )}
 
       {isUsersLoading ? (
         <div className="spinner-wrap"><div className="loading-spinner"></div></div>
       ) : (
-        <div className="users-container">
-          {users.length > 0 && <h2>Users</h2>}
-          <div className="users-grid">
-            {users.map(user => (
-              <UserCard 
-                key={user.id} 
-                user={user} 
-                isActive={selectedUser === user.login} 
-                onClick={handleUserClick} 
-              />
-            ))}
-          </div>
+        <div className="user-results-grid">
+          {users.map(user => (
+            <UserCard 
+              key={user.id} 
+              user={user} 
+              isActive={selectedUser === user.login} 
+              onClick={handleUserClick} 
+            />
+          ))}
         </div>
       )}
 
       {selectedUser && (
-        <div className="repos-section">
+        <div className="repos-container fade-in">
           <div className="repos-header">
-            <h2>Repositories for {selectedUser}</h2>
+            <h2>Repositories for <span style={{ color: 'var(--accent-color)' }}>{selectedUser}</span></h2>
             {repos.length > 0 && (
               <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <select 
-                  className="theme-btn" 
-                  value={sortBy} 
-                  onChange={e => setSortBy(e.target.value)}
-                >
-                  <option value="updated">Recently Updated</option>
-                  <option value="stars">Most Stars</option>
-                  <option value="forks">Most Forks</option>
+                <select className="theme-toggle-pill" value={sortBy} onChange={e => setSortBy(e.target.value)}>
+                  <option value="updated">Latest</option>
+                  <option value="stars">Stars</option>
+                  <option value="forks">Forks</option>
                 </select>
-                <select 
-                  className="theme-btn" 
-                  value={filterLang} 
-                  onChange={e => setFilterLang(e.target.value)}
-                >
+                <select className="theme-toggle-pill" value={filterLang} onChange={e => setFilterLang(e.target.value)}>
                   {languages.map(lang => (
                     <option key={lang} value={lang}>{lang}</option>
                   ))}
@@ -139,8 +147,8 @@ const Home = () => {
 
           {isReposLoading ? (
             <div className="spinner-wrap"><div className="loading-spinner"></div></div>
-          ) : reposError ? (
-            <div style={{ color: '#ff4d4f', padding: '1rem' }}>{reposError}</div>
+          ) : repos.length === 0 ? (
+            <p style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>No public repositories found.</p>
           ) : (
             <div className="repos-grid">
               {processedRepos.map(repo => (
