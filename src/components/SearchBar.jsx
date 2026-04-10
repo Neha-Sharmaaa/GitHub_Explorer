@@ -9,17 +9,19 @@ const SearchBar = ({ query, setQuery }) => {
   return (
     <div className="search-container">
       <div className="search-wrapper">
-        <Search className="search-icon" size={20} />
+        <Search className="search-icon" size={16} />
         <input
           type="text"
           className="search-input"
           placeholder="Search GitHub users..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          autoComplete="off"
+          spellCheck="false"
         />
         {query && (
           <button className="clear-btn" onClick={handleClear} aria-label="Clear search">
-            <X size={16} />
+            <X size={14} />
           </button>
         )}
       </div>
