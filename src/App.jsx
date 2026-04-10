@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Home from './pages/Home';
-import { Moon, Sun, Github } from 'lucide-react';
+import { Moon, Sun, Compass } from 'lucide-react';
 import './index.css';
 
 function App() {
-  const [theme, setTheme] = useState('dark'); // Default to dark for neon glass effect
+  const [theme, setTheme] = useState('dark');
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -24,7 +24,7 @@ function App() {
       <header className="app-header">
         <div className="brand-logo">
           <div className="brand-icon">
-            <Github size={20} strokeWidth={2.5} />
+            <Compass size={20} strokeWidth={2.5} />
           </div>
           neonGit
         </div>
