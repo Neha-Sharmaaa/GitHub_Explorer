@@ -1,7 +1,7 @@
 import React from 'react';
 import { Search, X } from 'lucide-react';
 
-const SearchBar = ({ query, setQuery }) => {
+const SearchBar = ({ query, setQuery, autoFocus }) => {
   const handleClear = () => {
     setQuery('');
   };
@@ -18,6 +18,7 @@ const SearchBar = ({ query, setQuery }) => {
           onChange={(e) => setQuery(e.target.value)}
           autoComplete="off"
           spellCheck="false"
+          autoFocus={autoFocus}
         />
         {query && (
           <button className="clear-btn" onClick={handleClear} aria-label="Clear search">
