@@ -1,12 +1,14 @@
 import React from 'react';
+import { Search } from 'lucide-react';
 
 const SearchBar = ({ query, setQuery, autoFocus }) => {
   return (
-    <div className="search-input-wrapper">
+    <div className="search-pill-container">
+      <Search className="search-pill-icon" size={20} />
       <input
         type="text"
-        className="search-field"
-        placeholder="Enter codename to scan..."
+        className="search-pill-input"
+        placeholder="Search GitHub users..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         autoComplete="off"
