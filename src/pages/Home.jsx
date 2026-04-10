@@ -143,7 +143,7 @@ const Home = () => {
   return (
     <div className="container">
       {/* Search */}
-      <SearchBar query={query} setQuery={setQuery} />
+      <SearchBar query={query} setQuery={setQuery} autoFocus={true} />
 
       {/* Error State: Users */}
       {usersError && (
