@@ -9,11 +9,8 @@ const UserCard = ({ user, onClick, isActive }) => {
       tabIndex={0}
       onKeyDown={(e) => e.key === 'Enter' && onClick(user.login)}
     >
-      <img src={user.avatar_url} alt={user.login} className="avatar-sm" />
-      <div className="user-info">
-        <div style={{ fontWeight: 600, fontSize: '0.875rem' }}>{user.login}</div>
-        <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>View details</div>
-      </div>
+      <img src={user.avatar_url} alt={user.login} className="user-avatar" />
+      <div className="user-name">{user.login}</div>
     </div>
   );
 };
