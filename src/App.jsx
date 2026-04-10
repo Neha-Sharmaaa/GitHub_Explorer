@@ -4,10 +4,10 @@ import { Moon, Sun, Compass } from 'lucide-react';
 import './index.css';
 
 function App() {
-  const [theme, setTheme] = useState('dark');
+  const [theme, setTheme] = useState('light');
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') || 'dark';
+    const savedTheme = localStorage.getItem('theme') || 'light';
     setTheme(savedTheme);
     document.body.setAttribute('data-theme', savedTheme);
   }, []);
@@ -22,19 +22,17 @@ function App() {
   return (
     <>
       <header className="app-header">
-        <div className="brand-logo">
-          <div className="brand-icon">
-            <Compass size={20} strokeWidth={2.5} />
-          </div>
-          neonGit
+        <div className="brand-wrapper">
+          <Compass size={24} />
+          <span>GitHub Explorer</span>
         </div>
         
         <button 
           onClick={toggleTheme} 
-          className="theme-toggle"
+          className="btn-icon"
           aria-label="Toggle theme"
         >
-          {theme === 'light' ? <Moon size={18} strokeWidth={2.5} /> : <Sun size={18} strokeWidth={2.5} />}
+          {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
         </button>
       </header>
 
