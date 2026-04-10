@@ -2,30 +2,28 @@ import React from 'react';
 import { Search, X } from 'lucide-react';
 
 const SearchBar = ({ query, setQuery, autoFocus }) => {
-  const handleClear = () => {
-    setQuery('');
-  };
-
   return (
-    <div className="search-container">
-      <div className="search-wrapper">
-        <Search className="search-icon" size={16} />
-        <input
-          type="text"
-          className="search-input"
-          placeholder="Search GitHub users..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          autoComplete="off"
-          spellCheck="false"
-          autoFocus={autoFocus}
-        />
-        {query && (
-          <button className="clear-btn" onClick={handleClear} aria-label="Clear search">
-            <X size={14} />
-          </button>
-        )}
-      </div>
+    <div className="search-center-wrapper">
+      <Search className="search-icon-glass" size={20} strokeWidth={2.5} />
+      <input
+        type="text"
+        className="search-input-glass"
+        placeholder="Enter codename to scan..."
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        autoComplete="off"
+        spellCheck="false"
+        autoFocus={autoFocus}
+      />
+      {query && (
+        <button 
+          className="search-clear-glass" 
+          onClick={() => setQuery('')} 
+          aria-label="Clear search"
+        >
+          <X size={16} strokeWidth={2.5} />
+        </button>
+      )}
     </div>
   );
 };
