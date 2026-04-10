@@ -5,11 +5,31 @@ import RepoCard from '../components/RepoCard';
 import Loader from '../components/Loader';
 import { useDebounce } from '../hooks/useDebounce';
 import { searchUsers, getUserRepos } from '../services/githubApi';
-import { BookOpen, Search, AlertCircle } from 'lucide-react';
+import { BookOpen, Search, AlertCircle, Code2 } from 'lucide-react';
+
+// Custom GitHub icon
+const GithubIcon = ({ size = 24, className, style }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+    style={style}
+  >
+    <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+    <path d="M9 18c-4.51 2-5-2-7-2" />
+  </svg>
+);
 
 const Home = () => {
   const [query, setQuery] = useState('');
-  const debouncedQuery = useDebounce(query, 500); // 500ms delay
+  const debouncedQuery = useDebounce(query, 500);
 
   // State: Users
   const [users, setUsers] = useState([]);
@@ -23,8 +43,11 @@ const Home = () => {
   const [reposError, setReposError] = useState(null);
 
   // Sorting and Filtering states for repos
-  const [sortBy, setSortBy] = useState('updated'); // updated, stars, forks
+  const [sortBy, setSortBy] = useState('updated');
   const [filterLang, setFilterLang] = useState('All');
+
+  // Track if user has ever searched
+  const [hasSearched, setHasSearched] = useState(false);
 
   // Effect: Fetch Users when debouncedQuery changes
   useEffect(() => {
@@ -35,6 +58,7 @@ const Home = () => {
         return;
       }
 
+      setHasSearched(true);
       setIsUsersLoading(true);
       setUsersError(null);
 
@@ -56,8 +80,6 @@ const Home = () => {
     setSelectedUser(username);
     setIsReposLoading(true);
     setReposError(null);
-
-    // Reset filters when a new user is selected
     setSortBy('updated');
     setFilterLang('All');
 
@@ -80,20 +102,43 @@ const Home = () => {
   // Derived state: Filtered and Sorted Repos
   const processedRepos = useMemo(() => {
     let filtered = repos;
-    
-    // 1. Filter
     if (filterLang !== 'All') {
       filtered = filtered.filter(r => r.language === filterLang);
     }
-
-    // 2. Sort
     return [...filtered].sort((a, b) => {
       if (sortBy === 'stars') return b.stargazers_count - a.stargazers_count;
       if (sortBy === 'forks') return b.forks_count - a.forks_count;
-      // Default: sort by updated_at (which API already kind of does, but enforce it)
       return new Date(b.updated_at) - new Date(a.updated_at);
     });
   }, [repos, filterLang, sortBy]);
+
+  // Show hero landing when user hasn't searched yet
+  const showHero = !hasSearched && query === '';
+
+  if (showHero) {
+    return (
+      <div className="hero-landing">
+        <div className="hero-content fade-in">
+          <div className="hero-icon">
+            <GithubIcon size={48} />
+          </div>
+          <h1 className="hero-title">GitExplorer</h1>
+          <p className="hero-subtitle">
+            Discover GitHub users and explore their repositories
+          </p>
+          <div className="hero-search">
+            <SearchBar query={query} setQuery={setQuery} />
+          </div>
+          <div className="hero-hints">
+            <span className="hero-hint">
+              <Code2 size={14} />
+              Try searching for a username to get started
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container">
@@ -118,10 +163,8 @@ const Home = () => {
             )}
           </div>
           <div className="section-body">
-            {/* LOADING STATE */}
             {isUsersLoading && <Loader message="Searching users..." />}
 
-            {/* EMPTY STATE: No results found */}
             {!isUsersLoading && !usersError && users.length === 0 && debouncedQuery && (
               <div className="empty-state fade-in">
                 <Search size={32} className="empty-state__icon" />
@@ -132,12 +175,10 @@ const Home = () => {
               </div>
             )}
 
-            {/* PROMPT STATE: No query yet */}
             {!isUsersLoading && query === '' && users.length === 0 && (
-              <p className="prompt-text">Type a username to start searching</p>
+              <p className="prompt-text">Type a username to search</p>
             )}
 
-            {/* USERS LIST */}
             <div className="grid-repos">
               {users.map((user, i) => (
                 <div key={user.id} className="fade-in" style={{ animationDelay: `${i * 40}ms` }}>
@@ -156,7 +197,6 @@ const Home = () => {
         <div className="section-panel">
           {selectedUser ? (
             <>
-              {/* Repos Header */}
               <div className="repos-header">
                 <span className="repos-header__title">
                   <BookOpen size={16} />
@@ -167,7 +207,6 @@ const Home = () => {
                 )}
               </div>
               
-              {/* Filter & Sort Controls */}
               {repos.length > 0 && (
                 <div className="controls-bar">
                   <label className="control-label" htmlFor="sort-select">Sort:</label>
@@ -196,10 +235,8 @@ const Home = () => {
                 </div>
               )}
 
-              {/* LOADING STATE */}
               {isReposLoading && <Loader message={`Loading ${selectedUser}'s repos...`} />}
 
-              {/* ERROR STATE */}
               {reposError && (
                 <div className="error-banner" style={{ margin: '1rem' }}>
                   <AlertCircle size={16} />
@@ -207,7 +244,6 @@ const Home = () => {
                 </div>
               )}
 
-              {/* EMPTY STATE */}
               {!isReposLoading && !reposError && repos.length === 0 && (
                 <div className="empty-state fade-in">
                   <BookOpen size={32} className="empty-state__icon" />
@@ -216,7 +252,6 @@ const Home = () => {
                 </div>
               )}
 
-              {/* REPOS LIST */}
               <div className="grid-repos">
                 {processedRepos.map((repo, i) => (
                   <div key={repo.id} className="fade-in" style={{ animationDelay: `${i * 30}ms` }}>
@@ -230,7 +265,7 @@ const Home = () => {
               <Search size={36} className="empty-state__icon" />
               <p className="empty-state__title">Select a user</p>
               <p className="empty-state__desc">
-                Search for a GitHub user, then select their profile to browse repositories.
+                Click on a user from the left to browse their repositories.
               </p>
             </div>
           )}

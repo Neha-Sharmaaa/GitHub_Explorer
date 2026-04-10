@@ -721,3 +721,118 @@ a:hover {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted);
 }
+
+/* =============================
+   Hero Landing
+   ============================= */
+.hero-landing {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 56px);
+  padding: 2rem 1.5rem;
+}
+
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 520px;
+  width: 100%;
+}
+
+.hero-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--accent-subtle);
+  border: 1px solid var(--accent-muted);
+  color: var(--accent);
+  margin-bottom: 1.5rem;
+  animation: breathe 3s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 var(--accent-subtle); }
+  50% { transform: scale(1.05); box-shadow: 0 0 0 12px transparent; }
+}
+
+.hero-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 0.625rem;
+}
+
+.hero-subtitle {
+  font-size: 1.0625rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 2rem;
+  max-width: 360px;
+}
+
+.hero-search {
+  width: 100%;
+  margin-bottom: 1.25rem;
+}
+
+.hero-search .search-container {
+  margin-bottom: 0;
+}
+
+.hero-search .search-input {
+  padding: 0.75rem 2.75rem;
+  font-size: 0.9375rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.hero-search .search-input:focus {
+  box-shadow: var(--shadow-focus), var(--shadow-md);
+}
+
+.hero-hints {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hero-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  padding: 0.375rem 0.75rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-full);
+}
+
+@media (max-width: 767px) {
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.9375rem;
+  }
+
+  .hero-icon {
+    width: 64px;
+    height: 64px;
+  }
+
+  .hero-icon svg {
+    width: 36px;
+    height: 36px;
+  }
+}
+

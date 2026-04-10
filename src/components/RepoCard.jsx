@@ -1,32 +1,54 @@
 import React from 'react';
-import { Star, GitFork, BookOpen } from 'lucide-react';
+import { Star, GitFork, BookOpen, Clock } from 'lucide-react';
 
 const RepoCard = ({ repo }) => {
+  // Format the updated date
+  const updatedAt = new Date(repo.updated_at);
+  const now = new Date();
+  const diffMs = now - updatedAt;
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  
+  let timeAgo;
+  if (diffDays === 0) timeAgo = 'today';
+  else if (diffDays === 1) timeAgo = 'yesterday';
+  else if (diffDays < 30) timeAgo = `${diffDays}d ago`;
+  else if (diffDays < 365) timeAgo = `${Math.floor(diffDays / 30)}mo ago`;
+  else timeAgo = `${Math.floor(diffDays / 365)}y ago`;
+
   return (
-    <div className="card repo-card">
-      <div className="flex justify-between align-center mb-4">
+    <div className="repo-card">
+      <div className="repo-card__header">
         <h3 className="repo-title">
-          <BookOpen size={18} className="icon-blue" />
+          <BookOpen size={16} className="icon-blue" />
           <a href={repo.html_url} target="_blank" rel="noopener noreferrer">
             {repo.name}
           </a>
         </h3>
-        <span className="badge">{repo.language || 'Code'}</span>
+        {repo.language && (
+          <span className="badge">
+            <span className="lang-dot" />
+            {repo.language}
+          </span>
+        )}
       </div>
       
-      <p className="text-secondary repo-desc">
-        {repo.description || 'No description available for this repository.'}
+      <p className="repo-desc">
+        {repo.description || 'No description provided.'}
       </p>
       
       <div className="repo-stats">
-        <div className="stat">
-          <Star size={16} />
-          <span>{repo.stargazers_count}</span>
-        </div>
-        <div className="stat">
-          <GitFork size={16} />
-          <span>{repo.forks_count}</span>
-        </div>
+        <span className="stat">
+          <Star size={14} />
+          {repo.stargazers_count.toLocaleString()}
+        </span>
+        <span className="stat">
+          <GitFork size={14} />
+          {repo.forks_count.toLocaleString()}
+        </span>
+        <span className="stat">
+          <Clock size={14} />
+          Updated {timeAgo}
+        </span>
       </div>
     </div>
   );
