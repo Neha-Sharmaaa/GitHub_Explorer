@@ -153,7 +153,7 @@ const Home = () => {
         </div>
       )}
 
-      <div className="layout-sidebar">
+      <div className={`layout-sidebar ${!selectedUser ? 'single-column' : ''}`}>
         {/* LEFT COLUMN: Users List */}
         <div className="section-panel">
           <div className="section-header">
@@ -194,9 +194,8 @@ const Home = () => {
         </div>
 
         {/* RIGHT COLUMN: Repositories */}
-        <div className="section-panel">
-          {selectedUser ? (
-            <>
+        {selectedUser && (
+          <div className="section-panel">
               <div className="repos-header">
                 <span className="repos-header__title">
                   <BookOpen size={16} />
@@ -259,17 +258,8 @@ const Home = () => {
                   </div>
                 ))}
               </div>
-            </>
-          ) : (
-            <div className="empty-state" style={{ minHeight: '360px' }}>
-              <Search size={36} className="empty-state__icon" />
-              <p className="empty-state__title">Select a user</p>
-              <p className="empty-state__desc">
-                Click on a user from the left to browse their repositories.
-              </p>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
