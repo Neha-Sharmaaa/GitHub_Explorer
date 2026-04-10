@@ -5,25 +5,7 @@ import RepoCard from '../components/RepoCard';
 import Loader from '../components/Loader';
 import { useDebounce } from '../hooks/useDebounce';
 import { searchUsers, getUserRepos } from '../services/githubApi';
-// Custom GitHub icon (removed from lucide-react in recent versions)
-const GithubIcon = ({ size = 24, className, style }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-    style={style}
-  >
-    <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
-    <path d="M9 18c-4.51 2-5-2-7-2" />
-  </svg>
-);
+import { BookOpen, Search, AlertCircle } from 'lucide-react';
 
 const Home = () => {
   const [query, setQuery] = useState('');
@@ -115,65 +97,95 @@ const Home = () => {
 
   return (
     <div className="container">
-      <header>
-        <h1><GithubIcon /> GitHub Explorer</h1>
-        {/* Dark mode toggle normally happens in App.js wrapper, but we keep header simple */}
-      </header>
-
+      {/* Search */}
       <SearchBar query={query} setQuery={setQuery} />
 
-      {/* ERROR STATE: Users */}
-      {usersError && <div className="empty-state" style={{ color: 'red' }}>{usersError}</div>}
+      {/* Error State: Users */}
+      {usersError && (
+        <div className="error-banner">
+          <AlertCircle size={16} />
+          {usersError}
+        </div>
+      )}
 
       <div className="layout-sidebar">
         {/* LEFT COLUMN: Users List */}
-        <div className="users-section">
-          <h2 className="mb-4" style={{ fontSize: '1.2rem' }}>Users</h2>
-          
-          {/* LOADING STATE */}
-          {isUsersLoading && <Loader message="Searching users..." />}
+        <div className="section-panel">
+          <div className="section-header">
+            <span className="section-title">Users</span>
+            {users.length > 0 && (
+              <span className="section-count">{users.length}</span>
+            )}
+          </div>
+          <div className="section-body">
+            {/* LOADING STATE */}
+            {isUsersLoading && <Loader message="Searching users..." />}
 
-          {/* EMPTY STATE */}
-          {!isUsersLoading && !usersError && users.length === 0 && debouncedQuery && (
-            <div className="empty-state">No users found for "{debouncedQuery}".</div>
-          )}
-          {!isUsersLoading && query === '' && users.length === 0 && (
-            <div className="text-secondary text-center mt-4">Type a username to start searching.</div>
-          )}
+            {/* EMPTY STATE: No results found */}
+            {!isUsersLoading && !usersError && users.length === 0 && debouncedQuery && (
+              <div className="empty-state fade-in">
+                <Search size={32} className="empty-state__icon" />
+                <p className="empty-state__title">No users found</p>
+                <p className="empty-state__desc">
+                  No results for "{debouncedQuery}". Try a different search term.
+                </p>
+              </div>
+            )}
 
-          <div className="flex-col gap-2">
-            {users.map(user => (
-              <UserCard 
-                key={user.id} 
-                user={user} 
-                onClick={handleUserClick} 
-                isActive={selectedUser === user.login}
-              />
-            ))}
+            {/* PROMPT STATE: No query yet */}
+            {!isUsersLoading && query === '' && users.length === 0 && (
+              <p className="prompt-text">Type a username to start searching</p>
+            )}
+
+            {/* USERS LIST */}
+            <div className="grid-repos">
+              {users.map((user, i) => (
+                <div key={user.id} className="fade-in" style={{ animationDelay: `${i * 40}ms` }}>
+                  <UserCard 
+                    user={user} 
+                    onClick={handleUserClick} 
+                    isActive={selectedUser === user.login}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* RIGHT COLUMN: Repositories */}
-        <div className="repos-section">
+        <div className="section-panel">
           {selectedUser ? (
             <>
-              <h2 className="mb-4" style={{ fontSize: '1.2rem' }}>Repositories for {selectedUser}</h2>
+              {/* Repos Header */}
+              <div className="repos-header">
+                <span className="repos-header__title">
+                  <BookOpen size={16} />
+                  Repositories for <strong style={{ marginLeft: '0.25rem' }}>{selectedUser}</strong>
+                </span>
+                {repos.length > 0 && (
+                  <span className="repos-header__count">{processedRepos.length}</span>
+                )}
+              </div>
               
               {/* Filter & Sort Controls */}
               {repos.length > 0 && (
-                <div className="flex gap-4 mb-4" style={{ flexWrap: 'wrap' }}>
+                <div className="controls-bar">
+                  <label className="control-label" htmlFor="sort-select">Sort:</label>
                   <select 
-                    style={{ padding: '0.5rem', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--card-bg)', color: 'var(--text-color)' }}
+                    id="sort-select"
+                    className="control-select"
                     value={sortBy} 
                     onChange={e => setSortBy(e.target.value)}
                   >
                     <option value="updated">Recently Updated</option>
-                    <option value="stars">Most Stars ⭐️</option>
-                    <option value="forks">Most Forks 🍴</option>
+                    <option value="stars">Most Stars</option>
+                    <option value="forks">Most Forks</option>
                   </select>
 
+                  <label className="control-label" htmlFor="lang-select" style={{ marginLeft: '0.25rem' }}>Language:</label>
                   <select 
-                    style={{ padding: '0.5rem', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--card-bg)', color: 'var(--text-color)' }}
+                    id="lang-select"
+                    className="control-select"
                     value={filterLang} 
                     onChange={e => setFilterLang(e.target.value)}
                   >
@@ -188,24 +200,38 @@ const Home = () => {
               {isReposLoading && <Loader message={`Loading ${selectedUser}'s repos...`} />}
 
               {/* ERROR STATE */}
-              {reposError && <div className="empty-state" style={{ color: 'red' }}>{reposError}</div>}
+              {reposError && (
+                <div className="error-banner" style={{ margin: '1rem' }}>
+                  <AlertCircle size={16} />
+                  {reposError}
+                </div>
+              )}
 
               {/* EMPTY STATE */}
               {!isReposLoading && !reposError && repos.length === 0 && (
-                <div className="empty-state">User has no public repositories.</div>
+                <div className="empty-state fade-in">
+                  <BookOpen size={32} className="empty-state__icon" />
+                  <p className="empty-state__title">No repositories</p>
+                  <p className="empty-state__desc">This user has no public repositories.</p>
+                </div>
               )}
 
               {/* REPOS LIST */}
               <div className="grid-repos">
-                {processedRepos.map(repo => (
-                  <RepoCard key={repo.id} repo={repo} />
+                {processedRepos.map((repo, i) => (
+                  <div key={repo.id} className="fade-in" style={{ animationDelay: `${i * 30}ms` }}>
+                    <RepoCard repo={repo} />
+                  </div>
                 ))}
               </div>
             </>
           ) : (
-            <div className="empty-state" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: '300px' }}>
-              <GithubIcon size={48} className="text-secondary mb-4" style={{ opacity: 0.5 }} />
-              <p>Select a user from the list to view their repositories.</p>
+            <div className="empty-state" style={{ minHeight: '360px' }}>
+              <Search size={36} className="empty-state__icon" />
+              <p className="empty-state__title">Select a user</p>
+              <p className="empty-state__desc">
+                Search for a GitHub user, then select their profile to browse repositories.
+              </p>
             </div>
           )}
         </div>
