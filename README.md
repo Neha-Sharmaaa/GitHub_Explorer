@@ -1,8 +1,8 @@
-# GitHub Explorer 🚀
+# GitHub Explorer 
 
 A modern, responsive React application to search GitHub users and easily explore their repositories. Built with best frontend practices prioritizing simple, clean code.
 
-## 🎯 Features
+##  Features
 
 - **User Search with Debouncing:** Optimized search input that reduces unnecessary API calls.
 - **View Repositories:** Clicking a user smoothly loads their repositories.
@@ -11,7 +11,7 @@ A modern, responsive React application to search GitHub users and easily explore
 - **Dark Mode:** A sleek dark/light theme toggle saved in `localStorage`.
 - **Responsive Design:** Mobile-first layout using CSS Grid and Flexbox.
 
-## 📁 Folder Structure
+##  Folder Structure
 
 We follow a modular, scalable project structure:
 
@@ -31,24 +31,24 @@ src/
 - **Reusability:** Small pieces like `Loader` or `useDebounce` can be easily shared or tested.
 - **Maintainability:** Easy to read, debug, and expand.
 
-## 🛠️ State Handling Explained
+##  State Handling Explained
 
 1. **Loading State:** Shows an elegant spinner when fetching data, letting the user know the application is working. It improves UX by avoiding a "frozen" feeling.
 2. **Error State:** If the GitHub API fails (e.g., rate limit exceeded), we catch the error and show a user-friendly red message instead of crushing the app.
 3. **Empty State:** Guides the user when there are no repository or user results.
 
-## 🚀 Performance: The `useDebounce` Hook
+##  Performance: The `useDebounce` Hook
 
 When typing "react", instead of making 5 API calls (`r`, `re`, `rea`, `reac`, `react`), the `useDebounce` hook waits for 500ms *after* the user stops typing to trigger the fetch. 
 **Why it improves performance:** Avoids hammering the GitHub API, getting rate-limited, and causing laggy UI renders.
 
-## 💻 Tech Stack
+## Tech Stack
 - React.js (Functional Components, Hooks: `useState`, `useEffect`, `useMemo`)
 - Vite (Lightning fast bundler)
 - CSS Variables for Theming
 - Lucide React (Icons)
 
-## 🏃‍♂️ How to Run Locally
+##  How to Run Locally
 
 1. Clone the repository
 2. Install dependencies:
@@ -60,7 +60,7 @@ When typing "react", instead of making 5 API calls (`r`, `re`, `rea`, `reac`, `r
    npm run dev
    ```
 
-## 🌐 Steps to Deploy (Vercel)
+## Steps to Deploy (Vercel)
 
 Vercel is the easiest way to deploy a Vite React app.
 
@@ -71,7 +71,7 @@ Vercel is the easiest way to deploy a Vite React app.
 5. Vercel will automatically detect `Vite`. The build command (`npm run build`) and output directory (`dist`) will be pre-filled perfectly.
 6. Click **Deploy**. In ~30 seconds, your app will be live globally!
 
-## 💡 Debugging Tips
+## Debugging Tips
 - **Network Tab:** Check Chrome DevTools > Network to see if API calls fail or return unexpected JSON.
 - **GitHub Rate Limits:** GitHub allows ~60 requests/hr for unauthenticated IP addresses. If you see a `403 Forbidden`, you've hit the limit. Wait a bit or use a VPN.
 - **Console Logs:** Place `console.log(data)` immediately after `await response.json()` in the `services/githubApi.js` to inspect payload fields.
