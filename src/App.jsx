@@ -19,16 +19,12 @@ function App() {
   };
 
   return (
-    <div className="main-wrapper">
-      <header className="header-box">
-        <div className="header-title-group">
-          <h1>GitHub Explorer</h1>
-          <p>Search users, explore repositories, sort and filter quickly.</p>
-        </div>
-        <button onClick={toggleTheme} className="theme-btn">
+    <div className="main-container">
+      <nav className="top-nav">
+        <button onClick={toggleTheme} className="theme-toggle-pill">
           {theme === 'light' ? 'Dark mode' : 'Light mode'}
         </button>
-      </header>
+      </nav>
 
       <Home />
     </div>
