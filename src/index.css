@@ -193,8 +193,6 @@ body {
   color: var(--accent-color);
   background-color: rgba(68, 147, 248, 0.05);
 }
-  pointer-events: none;
-}
 
 /* =======================================
    Results Layout

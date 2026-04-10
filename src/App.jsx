@@ -3,10 +3,10 @@ import Home from './pages/Home';
 import './index.css';
 
 function App() {
-  const [theme, setTheme] = useState('dark');
+  const [theme, setTheme] = useState('light');
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') || 'dark';
+    const savedTheme = localStorage.getItem('theme') || 'light';
     setTheme(savedTheme);
     document.body.setAttribute('data-theme', savedTheme);
   }, []);
