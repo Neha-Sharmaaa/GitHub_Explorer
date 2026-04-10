@@ -44,6 +44,8 @@ const Home = () => {
       if (!debouncedQuery) {
         setUsers([]);
         setUsersError(null);
+        setSelectedUser(null);
+        setRepos([]);
         return;
       }
       setIsUsersLoading(true);
