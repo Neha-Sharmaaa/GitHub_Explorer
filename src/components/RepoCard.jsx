@@ -1,9 +1,9 @@
 import React from 'react';
-import { Star, GitFork, Book } from 'lucide-react';
+import { Star, GitFork } from 'lucide-react';
 
 const RepoCard = ({ repo }) => {
   return (
-    <div className="repo-card">
+    <div className="repo-card-minimal">
       {repo.language && (
         <span className="repo-badge">{repo.language}</span>
       )}
@@ -16,11 +16,11 @@ const RepoCard = ({ repo }) => {
       
       <div className="repo-footer">
         <div className="footer-item">
-          <Star size={14} />
+          <Star size={14} color="var(--accent-color)" />
           {repo.stargazers_count.toLocaleString()}
         </div>
         <div className="footer-item">
-          <GitFork size={14} />
+          <GitFork size={14} color="var(--accent-color)" />
           {repo.forks_count.toLocaleString()}
         </div>
       </div>
