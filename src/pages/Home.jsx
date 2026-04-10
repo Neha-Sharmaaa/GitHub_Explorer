@@ -107,9 +107,12 @@ const Home = () => {
 
   return (
     <>
-      <div className="results-header-bar">
-        <SearchBar query={query} setQuery={setQuery} autoFocus={true} />
-      </div>
+      {!selectedUser && (
+        <div className="results-header-bar">
+          <SearchBar query={query} setQuery={setQuery} autoFocus={true} />
+        </div>
+      )}
+
 
       {usersError && (
         <div style={{ color: '#ff4d4f', marginBottom: '2rem', textAlign: 'center' }}>
@@ -117,42 +120,79 @@ const Home = () => {
         </div>
       )}
 
-      {isUsersLoading ? (
-        <div className="user-results-grid">
-          {[...Array(8)].map((_, i) => <SkeletonCard key={i} />)}
-        </div>
-      ) : (
-        <div className="user-results-grid">
-          {users.map((user, index) => (
-            <UserCard 
-              key={user.id} 
-              user={user} 
-              isActive={selectedUser === user.login} 
-              onClick={handleUserClick} 
-              style={{ animationDelay: `${index * 0.05}s` }}
-            />
-          ))}
-        </div>
+      {!selectedUser && (
+        isUsersLoading ? (
+          <div className="user-results-grid">
+            {[...Array(8)].map((_, i) => <SkeletonCard key={i} />)}
+          </div>
+        ) : (
+          <div className="user-results-grid">
+            {users.map((user, index) => (
+              <UserCard 
+                key={user.id} 
+                user={user} 
+                isActive={selectedUser === user.login} 
+                onClick={handleUserClick} 
+                style={{ animationDelay: `${index * 0.05}s` }}
+              />
+            ))}
+          </div>
+        )
       )}
 
       {selectedUser && (
         <div className="repos-container fade-in">
+          {/* Enhanced User Profile Header */}
+          {(() => {
+            const userObj = users.find(u => u.login === selectedUser);
+            if (!userObj) return null;
+            return (
+              <div className="selected-user-profile">
+                <button 
+                  onClick={() => setSelectedUser(null)} 
+                  className="theme-toggle-pill back-btn-floating"
+                >
+                  ← Back to Search
+                </button>
+                <div className="profile-hero">
+                  <img src={userObj.avatar_url} alt={selectedUser} className="profile-avatar-large" />
+                  <div className="profile-info">
+                    <h1 className="profile-name">{selectedUser}</h1>
+                    <a href={userObj.html_url} target="_blank" rel="noopener noreferrer" className="github-link-pill">
+                       Visit GitHub Profile
+                    </a>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
           <div className="repos-header">
-            <h2>Repositories for <span style={{ color: 'var(--accent-color)' }}>{selectedUser}</span></h2>
+            <h2 style={{ margin: 0 }}>
+              Repositories
+            </h2>
+
             {repos.length > 0 && (
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <select className="theme-toggle-pill" value={sortBy} onChange={e => setSortBy(e.target.value)}>
-                  <option value="updated">Latest</option>
-                  <option value="stars">Stars</option>
-                  <option value="forks">Forks</option>
-                </select>
-                <select className="theme-toggle-pill" value={filterLang} onChange={e => setFilterLang(e.target.value)}>
-                  {languages.map(lang => (
-                    <option key={lang} value={lang}>{lang}</option>
-                  ))}
-                </select>
+              <div className="filter-group">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span className="filter-label">Sort:</span>
+                  <select className="filter-select" value={sortBy} onChange={e => setSortBy(e.target.value)}>
+                    <option value="updated">Latest</option>
+                    <option value="stars">Stars</option>
+                    <option value="forks">Forks</option>
+                  </select>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span className="filter-label">Lang:</span>
+                  <select className="filter-select" value={filterLang} onChange={e => setFilterLang(e.target.value)}>
+                    {languages.map(lang => (
+                      <option key={lang} value={lang}>{lang}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
             )}
+
           </div>
 
           {isReposLoading ? (
