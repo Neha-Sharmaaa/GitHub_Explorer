@@ -2,10 +2,9 @@ import React, { useState, useEffect, useMemo } from 'react';
 import SearchBar from '../components/SearchBar';
 import UserCard from '../components/UserCard';
 import RepoCard from '../components/RepoCard';
-import Loader from '../components/Loader';
 import { useDebounce } from '../hooks/useDebounce';
 import { searchUsers, getUserRepos } from '../services/githubApi';
-import { BookOpen, Search, AlertCircle, Compass } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 
 const Home = () => {
   const [query, setQuery] = useState('');
@@ -22,7 +21,6 @@ const Home = () => {
 
   const [sortBy, setSortBy] = useState('updated');
   const [filterLang, setFilterLang] = useState('All');
-  const [hasSearched, setHasSearched] = useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -31,7 +29,6 @@ const Home = () => {
         setUsersError(null);
         return;
       }
-      setHasSearched(true);
       setIsUsersLoading(true);
       setUsersError(null);
 
@@ -81,47 +78,25 @@ const Home = () => {
     });
   }, [repos, filterLang, sortBy]);
 
-  if (!hasSearched && query === '') {
-    return (
-      <div className="hero-landing fade-in">
-        <Compass size={64} className="hero-icon" />
-        <h1 className="hero-title">GitHub Explorer</h1>
-        <p className="hero-subtitle">
-          Discover GitHub users and explore their public repositories with a clean, structured interface.
-        </p>
-        <div className="hero-search-box">
-          <SearchBar query={query} setQuery={setQuery} autoFocus={true} />
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="container fade-in">
-      <SearchBar query={query} setQuery={setQuery} autoFocus={true} />
+    <>
+      <div className="search-box">
+        <label className="search-label">Search GitHub users</label>
+        <SearchBar query={query} setQuery={setQuery} autoFocus={true} />
+      </div>
 
       {usersError && (
-        <div className="error-banner" style={{ color: '#cf222e', marginBottom: '1rem' }}>
+        <div style={{ color: '#ff4d4f', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <AlertCircle size={16} /> {usersError}
         </div>
       )}
 
-      <div className={`layout-sidebar ${!selectedUser ? 'single-column' : ''}`}>
-        <div className="section-panel">
-          <div className="section-header">
-            <span>Users</span>
-            {users.length > 0 && <span className="section-count">{users.length}</span>}
-          </div>
-          
-          {isUsersLoading && <Loader message="Finding users..." />}
-          
-          {!isUsersLoading && !usersError && users.length === 0 && debouncedQuery && (
-            <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
-              No users found for "{debouncedQuery}"
-            </div>
-          )}
-
-          <div className="user-list">
+      {isUsersLoading ? (
+        <div className="spinner-wrap"><div className="loading-spinner"></div></div>
+      ) : (
+        <div className="users-container">
+          {users.length > 0 && <h2>Users</h2>}
+          <div className="users-grid">
             {users.map(user => (
               <UserCard 
                 key={user.id} 
@@ -132,19 +107,16 @@ const Home = () => {
             ))}
           </div>
         </div>
+      )}
 
-        {selectedUser && (
-          <div className="section-panel">
-            <div className="section-header">
-              <span>Repositories for {selectedUser}</span>
-              {repos.length > 0 && <span className="section-count">{processedRepos.length}</span>}
-            </div>
-
+      {selectedUser && (
+        <div className="repos-section">
+          <div className="repos-header">
+            <h2>Repositories for {selectedUser}</h2>
             {repos.length > 0 && (
-              <div style={{ padding: '1rem', borderBottom: '1px solid var(--border-default)', display: 'flex', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
                 <select 
-                  className="search-input" 
-                  style={{ width: 'auto', padding: '0.25rem 0.5rem' }}
+                  className="theme-btn" 
                   value={sortBy} 
                   onChange={e => setSortBy(e.target.value)}
                 >
@@ -153,8 +125,7 @@ const Home = () => {
                   <option value="forks">Most Forks</option>
                 </select>
                 <select 
-                  className="search-input" 
-                  style={{ width: 'auto', padding: '0.25rem 0.5rem' }}
+                  className="theme-btn" 
                   value={filterLang} 
                   onChange={e => setFilterLang(e.target.value)}
                 >
@@ -164,29 +135,22 @@ const Home = () => {
                 </select>
               </div>
             )}
+          </div>
 
-            {isReposLoading && <Loader message="Fetching repositories..." />}
-            
-            {reposError && (
-              <div style={{ padding: '1rem', color: '#cf222e' }}>
-                 {reposError}
-              </div>
-            )}
-
-            <div className="repo-list">
+          {isReposLoading ? (
+            <div className="spinner-wrap"><div className="loading-spinner"></div></div>
+          ) : reposError ? (
+            <div style={{ color: '#ff4d4f', padding: '1rem' }}>{reposError}</div>
+          ) : (
+            <div className="repos-grid">
               {processedRepos.map(repo => (
                 <RepoCard key={repo.id} repo={repo} />
               ))}
-              {!isReposLoading && !reposError && repos.length === 0 && (
-                <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                  This user has no public repositories.
-                </div>
-              )}
             </div>
-          </div>
-        )}
-      </div>
-    </div>
+          )}
+        </div>
+      )}
+    </>
   );
 };
 

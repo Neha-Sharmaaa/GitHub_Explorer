@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Home from './pages/Home';
-import { Moon, Sun, Compass } from 'lucide-react';
 import './index.css';
 
 function App() {
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = useState('dark');
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') || 'light';
+    const savedTheme = localStorage.getItem('theme') || 'dark';
     setTheme(savedTheme);
     document.body.setAttribute('data-theme', savedTheme);
   }, []);
@@ -20,24 +19,19 @@ function App() {
   };
 
   return (
-    <>
-      <header className="app-header">
-        <div className="brand-wrapper">
-          <Compass size={24} />
-          <span>GitHub Explorer</span>
+    <div className="main-wrapper">
+      <header className="header-box">
+        <div className="header-title-group">
+          <h1>GitHub Explorer</h1>
+          <p>Search users, explore repositories, sort and filter quickly.</p>
         </div>
-        
-        <button 
-          onClick={toggleTheme} 
-          className="btn-icon"
-          aria-label="Toggle theme"
-        >
-          {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+        <button onClick={toggleTheme} className="theme-btn">
+          {theme === 'light' ? 'Dark mode' : 'Light mode'}
         </button>
       </header>
 
       <Home />
-    </>
+    </div>
   );
 }
 
